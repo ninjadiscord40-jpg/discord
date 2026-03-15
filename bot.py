@@ -235,6 +235,44 @@ async def room(ctx, room_number, password):
         inline=False
     )
 
+    @bot.command()
+@commands.has_permissions(administrator=True)
+async def final(ctx, team1, team2):
+
+    await ctx.message.delete()
+
+    embed = discord.Embed(
+        title="🏆 نهائي البطولة",
+        description=f"تم لعب أول مباراة في النهائي ما بين\n\n**{team1} VS {team2}**",
+        color=discord.Color.gold()
+    )
+
+    embed.set_footer(text="BLZ ESPORTS")
+
+    await ctx.send("@everyone", embed=embed)
+
+    @bot.command()
+@commands.has_permissions(administrator=True)
+async def winner(ctx, team):
+
+    await ctx.message.delete()
+
+    embed = discord.Embed(
+        title="🎉 الفائز بالبطولة",
+        description=f"""
+🏆 تم ربح البطولة بواسطة فريق **{team}**
+
+🎁 وتم تسليم هدية **2000 شدة** داخل لعبة **PUBG MOBILE**
+
+🔥 انتظرونا في الإعلان عن البطولة القادمة
+""",
+        color=discord.Color.green()
+    )
+
+    embed.set_footer(text="BLZ ESPORTS")
+
+    await ctx.send("@everyone", embed=embed)
+
     embed.set_footer(text="BLZ ESPORTS")
 
     await ctx.send("@everyone", embed=embed)
