@@ -14,16 +14,17 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 players = {}
 
+# -----------------------------
 # تشغيل البوت
+# -----------------------------
 @bot.event
 async def on_ready():
     await bot.tree.sync()
     print(f"Bot is online as {bot.user}")
 
 # -----------------------------
-# شارة المطور
+# امر اختبار / شارة المطور
 # -----------------------------
-
 @bot.tree.command(name="ping", description="Ping command")
 async def slash_ping(interaction: discord.Interaction):
     await interaction.response.send_message("Pong!")
@@ -31,7 +32,6 @@ async def slash_ping(interaction: discord.Interaction):
 # -----------------------------
 # الترحيب
 # -----------------------------
-
 @bot.event
 async def on_member_join(member):
 
@@ -55,7 +55,7 @@ async def on_member_join(member):
 
     embed.add_field(
         name="📢 الشكاوي",
-        value=f"يمكنك الشكايه خلال الادمن <@{ADMIN_ID}>",
+        value=f"يمكنك الشكوى خلال الادمن <@{ADMIN_ID}>",
         inline=False
     )
 
@@ -66,13 +66,11 @@ async def on_member_join(member):
 # -----------------------------
 # جدول البطولة
 # -----------------------------
-
 def leaderboard():
 
     sorted_players = sorted(players.items(), key=lambda x: x[1], reverse=True)
 
     text = ""
-
     rank = 1
 
     for name, points in sorted_players:
@@ -87,7 +85,6 @@ def leaderboard():
             medal = "🥉"
 
         text += f"{medal} {rank}. {name} — {points} نقطة\n"
-
         rank += 1
 
     if text == "":
@@ -98,7 +95,6 @@ def leaderboard():
 # -----------------------------
 # مودال إضافة لاعب
 # -----------------------------
-
 class AddPlayerModal(discord.ui.Modal, title="اضافة لاعب"):
 
     player = discord.ui.TextInput(label="اسم اللاعب")
@@ -115,7 +111,6 @@ class AddPlayerModal(discord.ui.Modal, title="اضافة لاعب"):
 # -----------------------------
 # مودال إضافة نقاط
 # -----------------------------
-
 class AddPointsModal(discord.ui.Modal, title="اضافة نقاط"):
 
     player = discord.ui.TextInput(label="اسم اللاعب")
@@ -153,7 +148,6 @@ class AddPointsModal(discord.ui.Modal, title="اضافة نقاط"):
 # -----------------------------
 # لوحة البطولة
 # -----------------------------
-
 class TournamentPanel(discord.ui.View):
 
     @discord.ui.button(label="اضافة لاعب", style=discord.ButtonStyle.green)
@@ -167,9 +161,8 @@ class TournamentPanel(discord.ui.View):
         await interaction.response.send_modal(AddPointsModal())
 
 # -----------------------------
-# امر لوحة البطولة
+# أمر لوحة البطولة
 # -----------------------------
-
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def panel(ctx):
@@ -185,14 +178,13 @@ async def panel(ctx):
     await ctx.send(embed=embed, view=TournamentPanel())
 
 # -----------------------------
-# الموسيقى
+# تشغيل اغنية
 # -----------------------------
-
 @bot.command()
 async def play(ctx, *, search):
 
     if ctx.author.voice is None:
-        await ctx.send("ادخل كول الاول")
+        await ctx.send("ادخل الكول الاول")
         return
 
     voice_channel = ctx.author.voice.channel
@@ -203,18 +195,19 @@ async def play(ctx, *, search):
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
 
         info = ydl.extract_info(f"ytsearch:{search}", download=False)['entries'][0]
-
         url = info['url']
 
         vc.play(discord.FFmpegPCMAudio(url))
 
         await ctx.send(f"🎵 شغلت: {info['title']}")
 
+# -----------------------------
+# اعلان الروم
+# -----------------------------
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def room(ctx, room_number, password):
 
-    # حذف رسالة الامر
     await ctx.message.delete()
 
     embed = discord.Embed(
@@ -223,19 +216,17 @@ async def room(ctx, room_number, password):
         color=discord.Color.red()
     )
 
-    embed.add_field(
-        name="🎮 رقم الروم",
-        value=room_number,
-        inline=False
-    )
+    embed.add_field(name="🎮 رقم الروم", value=room_number, inline=False)
+    embed.add_field(name="🔑 الباسورد", value=password, inline=False)
 
-    embed.add_field(
-        name="🔑 الباسورد",
-        value=password,
-        inline=False
-    )
+    embed.set_footer(text="BLZ ESPORTS")
 
-    @bot.command()
+    await ctx.send("@everyone", embed=embed)
+
+# -----------------------------
+# اعلان النهائي
+# -----------------------------
+@bot.command()
 @commands.has_permissions(administrator=True)
 async def final(ctx, team1, team2):
 
@@ -251,7 +242,10 @@ async def final(ctx, team1, team2):
 
     await ctx.send("@everyone", embed=embed)
 
-    @bot.command()
+# -----------------------------
+# اعلان الفائز
+# -----------------------------
+@bot.command()
 @commands.has_permissions(administrator=True)
 async def winner(ctx, team):
 
@@ -262,7 +256,7 @@ async def winner(ctx, team):
         description=f"""
 🏆 تم ربح البطولة بواسطة فريق **{team}**
 
-🎁 وتم تسليم هدية **2000 شدة** داخل لعبة **PUBG MOBILE**
+🎁 وتم تسليم هدية **2000 شدة** داخل لعبة PUBG MOBILE
 
 🔥 انتظرونا في الإعلان عن البطولة القادمة
 """,
@@ -272,10 +266,5 @@ async def winner(ctx, team):
     embed.set_footer(text="BLZ ESPORTS")
 
     await ctx.send("@everyone", embed=embed)
-
-    embed.set_footer(text="BLZ ESPORTS")
-
-    await ctx.send("@everyone", embed=embed)
-
 
 bot.run(TOKEN)
